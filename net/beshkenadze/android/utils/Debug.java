@@ -6,7 +6,7 @@ import android.util.Log;
 
 public class Debug {
 	private static final String TAG = "LOGGER";
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 
 	public static void i(String string) {
 		if (DEBUG) {

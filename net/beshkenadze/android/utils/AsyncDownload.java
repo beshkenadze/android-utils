@@ -1,23 +1,31 @@
-package net.beshkenadze.android.network;
+package net.beshkenadze.android.utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
-import net.beshkenadze.android.utils.Debug;
-import net.beshkenadze.android.utils.Utils;
-
 import android.content.Context;
+import android.os.AsyncTask;
 
-public class Download{
+public class AsyncDownload extends AsyncTask<URL, Integer, File> {
 	private Context context;
 	public String[] mimetypes = { "jpg", "jpeg", "png", "xml" };
-	public Download(Context c) {
+	private onLoadListener listener;
+	public AsyncDownload(Context c, onLoadListener listener) {
 		context = c;
+		this.listener = listener;
+	}
+
+	@Override
+	protected File doInBackground(URL... urls) {
+		if (urls.length > 0) {
+			return this.downloadFile(urls[0]);
+		} else {
+			return null;
+		}
 	}
 
 	private File downloadFile(URL url) {
@@ -55,15 +63,19 @@ public class Download{
 		return cacheFile;
 	}
 
-
-	public File get(String url) {
-		try {
-			return downloadFile(new URL(url));
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	protected void onProgressUpdate(Integer... progress) {
+		Debug.i("progress:" + progress[0]);
+	}
+	protected void onPostExecute(File file) {
+		if(file != null) {
+			listener.onLoad((Object) file);
+		}else{
+			listener.onLoadError("Can't download");
 		}
-		return null;
+	}
+
+	public void get(URL url) {
+		execute(url);
 	}
 
 }

@@ -1,4 +1,4 @@
-package net.beshkenadze.android.network;
+package net.beshkenadze.android.utils;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -133,7 +133,6 @@ public class RestClient{
 		return executeRequest(request, url);
 	}
 
-//	private boolean waiting;
 	private boolean cancelled;
 
 	private String executeRequest(HttpUriRequest request, String url) {
@@ -168,8 +167,6 @@ public class RestClient{
 				e.printStackTrace();
 			}
 
-
-			//TODO: обработчик ошибки
 		}
 
 		return null;
@@ -200,17 +197,4 @@ public class RestClient{
 	public void setEncode(boolean encode) {
 		this.encode = encode;
 	}
-//	@Override
-//	protected Object doInBackground(Void... params) {
-//		return executeRequest(request, url);
-//	}
-//	@Override
-//	protected void onPostExecute(Object result) {
-//		if (result == null) {
-//			listener.onLoadError(url);
-//		} else {
-//			listener.onLoad(url, (String) result);
-//		}
-//		super.onPostExecute(result);
-//	}
 }

@@ -1,4 +1,4 @@
-package net.beshkenadze.android.network;
+package net.beshkenadze.android.utils;
 
 public interface onLoadListener {
 	public void onLoad(Object data);

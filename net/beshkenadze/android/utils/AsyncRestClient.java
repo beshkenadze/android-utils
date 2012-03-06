@@ -1,9 +1,7 @@
-package net.beshkenadze.android.network;
+package net.beshkenadze.android.utils;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import net.beshkenadze.android.utils.Debug;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -35,7 +33,6 @@ public class AsyncRestClient extends AsyncTask<Void, Void, Object> {
 	private Boolean encode = true;
 	private HttpUriRequest request;
 	private OnRequestListener listener;
-
 	public AsyncRestClient(String url, OnRequestListener listener) {
 		this.url = url;
 		params = new ArrayList<NameValuePair>();
@@ -72,11 +69,12 @@ public class AsyncRestClient extends AsyncTask<Void, Void, Object> {
 				try {
 					paramString = p.getName()
 							+ "="
-							+ (encode ? URLEncoder
-									.encode(p.getValue(), "UTF-8") : p
-									.getValue());
+							+ (encode ? URLEncoder.encode(p.getValue(), "UTF-8")
+									: p.getValue());
 				} catch (UnsupportedEncodingException e) {
-					paramString = p.getName() + "=" + p.getValue();
+					paramString = p.getName()
+							+ "="
+							+ p.getValue();
 					e.printStackTrace();
 				}
 				if (combinedParams.length() > 1) {
@@ -89,15 +87,13 @@ public class AsyncRestClient extends AsyncTask<Void, Void, Object> {
 		Log.i("APP", (url + combinedParams) + "");
 		return combinedParams;
 	}
-
 	public void postRequest() {
-		postRequest(null);
+		postRequest(url);
 	}
-
 	public void postRequest(String raw) {
 		request = new HttpPost(url);
-
-		if (raw != null) {
+		
+		if(raw != null) {
 			StringEntity se;
 			try {
 				se = new StringEntity(raw);
@@ -105,8 +101,8 @@ public class AsyncRestClient extends AsyncTask<Void, Void, Object> {
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
-
-		} else {
+			
+		}else{
 			List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 
 			if (!params.isEmpty()) {
@@ -116,13 +112,12 @@ public class AsyncRestClient extends AsyncTask<Void, Void, Object> {
 			}
 
 			try {
-				((HttpPost) request).setEntity(new UrlEncodedFormEntity(nvps,
-						HTTP.UTF_8));
+				((HttpPost) request).setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
 		}
-
+		
 		// add headers
 		for (NameValuePair h : headers) {
 			request.addHeader(h.getName(), h.getValue());
@@ -139,7 +134,7 @@ public class AsyncRestClient extends AsyncTask<Void, Void, Object> {
 		for (NameValuePair h : headers) {
 			request.addHeader(h.getName(), h.getValue());
 		}
-		// return executeRequest(request, url);
+		//return executeRequest(request, url);
 		Debug.i(request.toString());
 		execute();
 	}
@@ -175,13 +170,11 @@ public class AsyncRestClient extends AsyncTask<Void, Void, Object> {
 				e.printStackTrace();
 			} catch (IOException e) {
 				client.getConnectionManager().shutdown();
-				return null;
-				//e.printStackTrace();
+				e.printStackTrace();
 			}
 
-			// TODO сделать обарботку ошибки
 		}
-
+		
 		return "";
 	}
 
@@ -210,12 +203,10 @@ public class AsyncRestClient extends AsyncTask<Void, Void, Object> {
 	public void setEncode(boolean encode) {
 		this.encode = encode;
 	}
-
 	@Override
 	protected Object doInBackground(Void... params) {
 		return executeRequest(request, url);
 	}
-
 	@Override
 	protected void onPostExecute(Object result) {
 		if (result == null) {

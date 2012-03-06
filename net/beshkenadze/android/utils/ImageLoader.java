@@ -16,11 +16,11 @@ import java.util.Map;
 import java.util.Stack;
 import java.util.WeakHashMap;
 
-import net.beshkenadze.android.network.Download;
-
 public class ImageLoader {
 	public interface OnImageLoadListener {
 		public void onLoad();
+
+		public void onError();
 	}
 
 	MemoryCache memoryCache = new MemoryCache();
@@ -107,12 +107,8 @@ public class ImageLoader {
 			FileInputStream is = new FileInputStream(f);
 			BitmapFactory.decodeStream(is, null, o);
 
+			// не работает почему-то!!
 			int screenWidth = 480; // default
-//			if (HomeActivity.instance != null) {
-//				Display display = HomeActivity.instance.getWindowManager()
-//						.getDefaultDisplay();
-//				screenWidth = display.getWidth();
-//			}
 
 			// Find the correct scale value. It should be the power of 2.
 			final int REQUIRED_SIZE = screenWidth / 2;
@@ -281,7 +277,17 @@ public class ImageLoader {
 	}
 
 	PhotosLoader photoLoaderThread = new PhotosLoader();
-	private OnImageLoadListener listener;
+	private OnImageLoadListener listener = new OnImageLoadListener() {
+		@Override
+		public void onLoad() {
+			
+		}
+		
+		@Override
+		public void onError() {
+			
+		}
+	};
 
 	// Used to display bitmap in the UI thread
 	class BitmapDisplayer implements Runnable {
@@ -299,21 +305,17 @@ public class ImageLoader {
 			if (bitmap != null) {
 				if (bg) {
 					/*
-					if (imageView.getBackground() == null) {
-						Animation fadeIn = AnimationUtils.loadAnimation(
-								imageView.getContext(), R.anim.fade_in);
-						imageView.startAnimation(fadeIn);
-					}
-					*/
+					 * if (imageView.getBackground() == null) { Animation fadeIn
+					 * = AnimationUtils.loadAnimation( imageView.getContext(),
+					 * R.anim.fade_in); imageView.startAnimation(fadeIn); }
+					 */
 					imageView.setBackgroundDrawable(new BitmapDrawable(bitmap));
 				} else {
 					/*
-					if (imageView.getDrawable() == null) {
-						Animation fadeIn = AnimationUtils.loadAnimation(
-								imageView.getContext(), R.anim.fade_in);
-						imageView.startAnimation(fadeIn);
-					}
-					*/
+					 * if (imageView.getDrawable() == null) { Animation fadeIn =
+					 * AnimationUtils.loadAnimation( imageView.getContext(),
+					 * R.anim.fade_in); imageView.startAnimation(fadeIn); }
+					 */
 					imageView.setImageBitmap(bitmap);
 				}
 				if (listener != null) {
@@ -331,4 +333,7 @@ public class ImageLoader {
 		listener = l;
 	}
 
+	public OnImageLoadListener getOnImageLoadListener() {
+		return listener;
+	}
 }

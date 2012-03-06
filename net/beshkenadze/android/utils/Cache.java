@@ -1,13 +1,8 @@
-package net.beshkenadze.android.network;
+package net.beshkenadze.android.utils;
 
 import java.io.File;
 
-import net.beshkenadze.android.utils.Debug;
-import net.beshkenadze.android.utils.Filesystem;
-import net.beshkenadze.android.utils.Utils;
-
 import android.content.Context;
-
 
 public class Cache {
 	private File cacheDir;

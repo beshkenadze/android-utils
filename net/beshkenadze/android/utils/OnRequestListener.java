@@ -1,4 +1,4 @@
-package net.beshkenadze.android.network;
+package net.beshkenadze.android.utils;
 
 public interface OnRequestListener {
 	public void onLoadError(String url);
