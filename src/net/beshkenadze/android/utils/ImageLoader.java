@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.Log;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 
 import java.io.*;
@@ -15,6 +17,9 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Stack;
 import java.util.WeakHashMap;
+
+import org.coolreader.hacks.BitmapFactoryHack;
+import org.coolreader.hacks.VMRuntimeHack;
 
 public class ImageLoader {
 	public interface OnImageLoadListener {
@@ -27,12 +32,24 @@ public class ImageLoader {
 	Download fileCache;
 	private Map<ImageView, String> imageViews = Collections
 			.synchronizedMap(new WeakHashMap<ImageView, String>());
+	private VMRuntimeHack mRuntime;
+	private Context mContext;
 
-	public ImageLoader(Context с) {
+	public ImageLoader(Context с, VMRuntimeHack runtime) {
 		// Make the background thead low priority. This way it will not affect
 		// the UI performance
 		photoLoaderThread.setPriority(Thread.NORM_PRIORITY - 1);
 		fileCache = new Download(с);
+		mRuntime = runtime;
+	}
+
+	public ImageLoader(Context c) {
+		// Make the background thead low priority. This way it will not affect
+		// the UI performance
+		mContext = c;
+		photoLoaderThread.setPriority(Thread.NORM_PRIORITY - 1);
+		fileCache = new Download(c);
+		mRuntime = null;
 	}
 
 	public void DisplayImage(String url, ImageView imageView, boolean bg) {
@@ -67,13 +84,87 @@ public class ImageLoader {
 			photoLoaderThread.start();
 	}
 
+	static public Bitmap getBitmapFromUrl(Context c, String url) {
+		Download remoteFileCache = new Download(c);
+		File f = remoteFileCache.get(url);
+		// from web
+		try {
+			Bitmap bitmap = null;
+			URL imageUrl = new URL(url);
+			HttpURLConnection conn = (HttpURLConnection) imageUrl
+					.openConnection();
+			conn.setConnectTimeout(30000);
+			conn.setReadTimeout(30000);
+			InputStream is = conn.getInputStream();
+			OutputStream os = new FileOutputStream(f);
+			Utils.CopyStream(is, os);
+			os.close();
+			is.close();
+
+			bitmap = getBitmapFromFile(c, f);
+
+			return bitmap;
+		} catch (Exception ex) {
+			Log.e("pizza", "Error getting bitmap: " + ex);
+			ex.printStackTrace();
+			return null;
+		}
+	}
+
+	private static Bitmap getBitmapFromFile(Context c, File f) {
+		Bitmap bitmap = null;
+		try {
+			// decode image size
+			BitmapFactory.Options o = new BitmapFactory.Options();
+			o.inJustDecodeBounds = true;
+			FileInputStream fis = new FileInputStream(f);
+			BitmapFactory.decodeStream(fis, null, o);
+
+			int screenWidth = new MyDisplay(c).getDisplayWidth(); // default
+
+			// Find the correct scale value. It should be the power of 2.
+			final int REQUIRED_SIZE = screenWidth / 2;
+			int width_tmp = o.outWidth, height_tmp = o.outHeight;
+			int scale = 1;
+			while (true) {
+				if (width_tmp / 2 < REQUIRED_SIZE
+						|| height_tmp / 2 < REQUIRED_SIZE)
+					break;
+				width_tmp /= 2;
+				height_tmp /= 2;
+				scale *= 2;
+			}
+
+			fis.close();
+			fis = new FileInputStream(f);
+
+			// Decode with inSampleSize
+			BitmapFactory.Options o2 = new BitmapFactory.Options();
+			o2.inSampleSize = scale;
+			bitmap = BitmapFactory.decodeStream(fis, null, o2);
+			fis.close();
+
+		} catch (OutOfMemoryError e) {
+			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return bitmap;
+	}
+
 	private Bitmap getBitmap(String url) {
 		File f = fileCache.get(url);
 
 		// from SD cache
-		Bitmap b = decodeFile(f);
-		if (b != null)
-			return b;
+		Bitmap b;
+		try {
+			b = decodeFileMemory(f);
+			if (b != null)
+				return b;
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 
 		// from web
 		try {
@@ -88,13 +179,28 @@ public class ImageLoader {
 			Utils.CopyStream(is, os);
 			os.close();
 			is.close();
-			bitmap = decodeFileMemory(f);
+			if (mRuntime != null) {
+				bitmap = decodeFileMemoryHack(f);
+			} else {
+				bitmap = decodeFileMemory(f);
+			}
+
 			return bitmap;
 		} catch (Exception ex) {
 			Log.e("pizza", "Error getting bitmap: " + ex);
 			ex.printStackTrace();
 			return null;
 		}
+	}
+
+	private Bitmap decodeFileMemoryHack(File f) {
+		BitmapFactoryHack factory = new BitmapFactoryHack(mRuntime);
+		try {
+			Bitmap bmp = factory.alloc(decodeFile(f));
+			return bmp;
+		} catch (OutOfMemoryError e) {
+		}
+		return null;
 	}
 
 	public Bitmap decodeFileMemory(File f) throws InterruptedException {
@@ -108,7 +214,7 @@ public class ImageLoader {
 			BitmapFactory.decodeStream(is, null, o);
 
 			// не работает почему-то!!
-			int screenWidth = 480; // default
+			int screenWidth = new MyDisplay(mContext).getDisplayWidth(); // default
 
 			// Find the correct scale value. It should be the power of 2.
 			final int REQUIRED_SIZE = screenWidth / 2;
@@ -159,42 +265,18 @@ public class ImageLoader {
 			o.inJustDecodeBounds = true;
 			FileInputStream is = new FileInputStream(f);
 			BitmapFactory.decodeStream(is, null, o);
-
-			// не работает почему-то!!
-			int screenWidth = 480; // default
-
-			// Find the correct scale value. It should be the power of 2.
-			final int REQUIRED_SIZE = screenWidth / 2;
-			int width_tmp = o.outWidth, height_tmp = o.outHeight;
-			int scale = 1;
-			while (true) {
-				if (width_tmp / 2 < REQUIRED_SIZE
-						|| height_tmp / 2 < REQUIRED_SIZE)
-					break;
-				width_tmp /= 2;
-				height_tmp /= 2;
-				scale *= 2;
-			}
-
-			if (scale != 1)
-				Log.i("pizza", "decodeFile: resizing image with scale " + scale);
-
 			is.close();
 			is = new FileInputStream(f);
 
-			// decode with inSampleSize
 			BitmapFactory.Options o2 = new BitmapFactory.Options();
-			o2.inSampleSize = scale;
 			Bitmap bitmap = BitmapFactory.decodeStream(is, null, o2);
 			is.close();
 			return bitmap;
 		} catch (OutOfMemoryError e) {
 			memoryCache.clear();
-			Log.e("pizza", "Error decoding file: " + e);
 			e.printStackTrace();
 			return null;
 		} catch (Exception e) {
-			Log.e("pizza", "Error decoding file: " + e);
 			e.printStackTrace();
 		}
 		return null;
@@ -252,7 +334,12 @@ public class ImageLoader {
 						Bitmap bmp = memoryCache.get(photoToLoad.url);
 
 						if (bmp == null) {
-							bmp = getBitmap(photoToLoad.url);
+							if(mRuntime != null){
+								bmp = getBitmapFromUrl(mContext, photoToLoad.url);
+							}else{
+								bmp = getBitmap(photoToLoad.url);
+							}
+							
 							if (bmp != null)
 								memoryCache.put(photoToLoad.url, bmp);
 						}
@@ -280,12 +367,12 @@ public class ImageLoader {
 	private OnImageLoadListener listener = new OnImageLoadListener() {
 		@Override
 		public void onLoad() {
-			
+
 		}
-		
+
 		@Override
 		public void onError() {
-			
+
 		}
 	};
 
@@ -304,18 +391,22 @@ public class ImageLoader {
 		public void run() {
 			if (bitmap != null) {
 				if (bg) {
-					/*
-					 * if (imageView.getBackground() == null) { Animation fadeIn
-					 * = AnimationUtils.loadAnimation( imageView.getContext(),
-					 * R.anim.fade_in); imageView.startAnimation(fadeIn); }
-					 */
+
+					if (imageView.getBackground() == null) {
+						Animation fadeIn = AnimationUtils.loadAnimation(
+								imageView.getContext(), android.R.anim.fade_in);
+						imageView.startAnimation(fadeIn);
+					}
+
 					imageView.setBackgroundDrawable(new BitmapDrawable(bitmap));
 				} else {
-					/*
-					 * if (imageView.getDrawable() == null) { Animation fadeIn =
-					 * AnimationUtils.loadAnimation( imageView.getContext(),
-					 * R.anim.fade_in); imageView.startAnimation(fadeIn); }
-					 */
+
+					if (imageView.getDrawable() == null) {
+						Animation fadeIn = AnimationUtils.loadAnimation(
+								imageView.getContext(), android.R.anim.fade_in);
+						imageView.startAnimation(fadeIn);
+					}
+
 					imageView.setImageBitmap(bitmap);
 				}
 				if (listener != null) {

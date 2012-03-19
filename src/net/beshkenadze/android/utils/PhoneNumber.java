@@ -13,8 +13,11 @@ public class PhoneNumber {
 
 	public PhoneNumber(HashMap<String, String> hashPhoneNumber) {
 		if (hashPhoneNumber != null) {
-			if (hashPhoneNumber.containsKey("country"))
+			
+			if (hashPhoneNumber.containsKey("country")) {
 				setCountry(hashPhoneNumber.get("country"));
+			}
+				
 			if (hashPhoneNumber.containsKey("prefix"))
 				setPrefix(hashPhoneNumber.get("prefix"));
 			if (hashPhoneNumber.containsKey("number"))
@@ -22,9 +25,12 @@ public class PhoneNumber {
 		}
 	}
 
-	public String getFullNumber() {
+	public String getMSISDN() {
 		return String.valueOf(getCountry()) + String.valueOf(getPrefix())
 				+ String.valueOf(getNumber());
+	}
+	public String getCallNumber() {
+		return "+"+getMSISDN();
 	}
 	public String getShortNumber() {
 		return String.valueOf(getPrefix())
