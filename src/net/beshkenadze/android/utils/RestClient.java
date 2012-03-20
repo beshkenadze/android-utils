@@ -19,7 +19,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RestClient{
+public class RestClient {
 
 	private String url;
 	private ArrayList<NameValuePair> params;
@@ -30,6 +30,7 @@ public class RestClient{
 	private String response;
 	private Boolean encode = true;
 	private HttpUriRequest request;
+
 	public RestClient(String url) {
 		this.url = url;
 		params = new ArrayList<NameValuePair>();
@@ -65,12 +66,11 @@ public class RestClient{
 				try {
 					paramString = p.getName()
 							+ "="
-							+ (encode ? URLEncoder.encode(p.getValue(), "UTF-8")
-									: p.getValue());
+							+ (encode ? URLEncoder
+									.encode(p.getValue(), "UTF-8") : p
+									.getValue());
 				} catch (UnsupportedEncodingException e) {
-					paramString = p.getName()
-							+ "="
-							+ p.getValue();
+					paramString = p.getName() + "=" + p.getValue();
 					e.printStackTrace();
 				}
 				if (combinedParams.length() > 1) {
@@ -80,16 +80,18 @@ public class RestClient{
 				}
 			}
 		}
-//		Log.i("APP", (url + combinedParams) + "");
+		// Log.i("APP", (url + combinedParams) + "");
 		return combinedParams;
 	}
+
 	public void postRequest() {
 		postRequest(url);
 	}
+
 	public String postRequest(String raw) {
 		request = new HttpPost(url);
-		
-		if(raw != null) {
+
+		if (raw != null) {
 			StringEntity se;
 			try {
 				se = new StringEntity(raw);
@@ -97,8 +99,8 @@ public class RestClient{
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
-			
-		}else{
+
+		} else {
 			List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 
 			if (!params.isEmpty()) {
@@ -108,12 +110,13 @@ public class RestClient{
 			}
 
 			try {
-				((HttpPost) request).setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
+				((HttpPost) request).setEntity(new UrlEncodedFormEntity(nvps,
+						HTTP.UTF_8));
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 		// add headers
 		for (NameValuePair h : headers) {
 			request.addHeader(h.getName(), h.getValue());
@@ -162,9 +165,11 @@ public class RestClient{
 			} catch (ClientProtocolException e) {
 				client.getConnectionManager().shutdown();
 				e.printStackTrace();
+				return null;
 			} catch (IOException e) {
 				client.getConnectionManager().shutdown();
 				e.printStackTrace();
+				return null;
 			}
 
 		}
