@@ -13,6 +13,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
 
 import java.io.*;
 import java.net.URLEncoder;
@@ -85,10 +86,10 @@ public class RestClient {
 	}
 
 	public void postRequest() {
-		postRequest(url);
+		postRequest(null);
 	}
 
-	public String postRequest(String raw) {
+	public void doPreparePostRequest(String raw) {
 		request = new HttpPost(url);
 
 		if (raw != null) {
@@ -121,11 +122,14 @@ public class RestClient {
 		for (NameValuePair h : headers) {
 			request.addHeader(h.getName(), h.getValue());
 		}
-
-		return executeRequest(request, url);
 	}
 
-	public String getRequest() {
+	public String postRequest(String raw) {
+		doPreparePostRequest(raw);
+		return getRequestString();
+	}
+
+	public void doPrepareGetRequest() {
 		Object combinedParams = prepare();
 		request = new HttpGet(url + combinedParams);
 
@@ -133,12 +137,20 @@ public class RestClient {
 		for (NameValuePair h : headers) {
 			request.addHeader(h.getName(), h.getValue());
 		}
-		return executeRequest(request, url);
+	}
+
+	public String getRequest() {
+		doPrepareGetRequest();
+		return getRequestString();
 	}
 
 	private boolean cancelled;
 
-	private String executeRequest(HttpUriRequest request, String url) {
+	private String getRequestString() {
+		return executeRequest();
+	}
+
+	public String executeRequest() {
 		cancelled = false;
 
 		while (!cancelled) {
@@ -154,11 +166,7 @@ public class RestClient {
 				HttpEntity entity = httpResponse.getEntity();
 
 				if (entity != null) {
-					InputStream instream = entity.getContent();
-					response = convertStreamToString(instream);
-
-					// Closing the input stream will trigger connection release
-					instream.close();
+					response = EntityUtils.toString(entity);
 					return response;
 				}
 
@@ -175,28 +183,6 @@ public class RestClient {
 		}
 
 		return null;
-	}
-
-	private static String convertStreamToString(InputStream is) {
-
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-		StringBuilder sb = new StringBuilder();
-
-		String line = null;
-		try {
-			while ((line = reader.readLine()) != null) {
-				sb.append(line + "\n");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				is.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return sb.toString();
 	}
 
 	public void setEncode(boolean encode) {

@@ -8,12 +8,14 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import net.beshkenadze.android.utils.logger.MyLogger;
+
 
 import android.content.Context;
 
 public class Download{
 	private Context context;
-	public String[] mimetypes = { "jpg", "jpeg", "png", "xml" };
+	public String[] mimetypes = { "jpg", "jpeg", "png", "gif", "xml" };
 	public Download(Context c) {
 		context = c;
 	}
@@ -45,7 +47,7 @@ public class Download{
 				bout.close();
 				in.close();
 			} catch (IOException e) {
-				//listener.onLoadError(e.);
+				return null;
 			}
 		}else{
 			Debug.i("File in cache!!!");
