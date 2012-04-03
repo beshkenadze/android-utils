@@ -1,5 +1,8 @@
 package net.beshkenadze.android.utils;
 
+import net.beshkenadze.android.hacks.DisableSSLCheck;
+import net.beshkenadze.android.utils.logger.MyLogger;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -27,6 +30,7 @@ public class RestClient {
 	private ArrayList<NameValuePair> headers;
 	private int responseCode;
 	private String message;
+	private Boolean mCheckSsl = false;
 
 	private String response;
 	private Boolean encode = true;
@@ -154,10 +158,16 @@ public class RestClient {
 		cancelled = false;
 
 		while (!cancelled) {
+
 			HttpClient client = new DefaultHttpClient();
 
 			HttpResponse httpResponse;
-
+			
+			if (!mCheckSsl) {
+				MyLogger.i("Disable SSL");
+				client = DisableSSLCheck.getNewHttpClient();
+			}
+			
 			try {
 				httpResponse = client.execute(request);
 				responseCode = httpResponse.getStatusLine().getStatusCode();
@@ -168,6 +178,8 @@ public class RestClient {
 				if (entity != null) {
 					response = EntityUtils.toString(entity);
 					return response;
+				} else {
+					return null;
 				}
 
 			} catch (ClientProtocolException e) {
@@ -187,5 +199,9 @@ public class RestClient {
 
 	public void setEncode(boolean encode) {
 		this.encode = encode;
+	}
+
+	public void disableSslCheck(Boolean check) {
+		mCheckSsl = check;
 	}
 }
