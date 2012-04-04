@@ -9,6 +9,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.HttpVersion;
+import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.PlainSocketFactory;
 import org.apache.http.conn.scheme.Scheme;
@@ -51,7 +52,11 @@ public class DisableSSLCheck {
 
 	}
 
-	public static DefaultHttpClient getNewHttpClient() {
+	public static HttpClient getNewHttpClient() {
+		return getNewHttpClient(new BasicHttpParams());
+	}
+
+	public static HttpClient getNewHttpClient(HttpParams httpParameters) {
 		// Create a trust manager that does not validate certificate chains
 		TrustManager[] trustAllCerts = getTrustCerts();
 		// Install the all-trusting trust manager
@@ -59,12 +64,11 @@ public class DisableSSLCheck {
 			KeyStore trustStore = KeyStore.getInstance(KeyStore
 					.getDefaultType());
 			trustStore.load(null, null);
-			
+
 			SSLContext sc = SSLContext.getInstance("TLS");
 			sc.init(null, trustAllCerts, new java.security.SecureRandom());
 			SSLSocketFactory sf = new MySSLSocketFactory(trustStore);
-			
-			
+
 			HttpParams params = new BasicHttpParams();
 			HttpProtocolParams.setVersion(params, HttpVersion.HTTP_1_1);
 			HttpProtocolParams.setContentCharset(params, HTTP.UTF_8);
@@ -73,8 +77,9 @@ public class DisableSSLCheck {
 			registry.register(new Scheme("http", PlainSocketFactory
 					.getSocketFactory(), 80));
 			registry.register(new Scheme("https", sf, 443));
-			
-			ClientConnectionManager ccm = new ThreadSafeClientConnManager(params, registry);
+
+			ClientConnectionManager ccm = new ThreadSafeClientConnManager(
+					params, registry);
 			return new DefaultHttpClient(ccm, params);
 		} catch (Exception e) {
 			e.printStackTrace();

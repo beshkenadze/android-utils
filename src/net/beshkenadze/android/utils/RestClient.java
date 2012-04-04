@@ -15,6 +15,9 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
+import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
@@ -35,7 +38,8 @@ public class RestClient {
 	private String response;
 	private Boolean encode = true;
 	private HttpUriRequest request;
-
+	private int mTimeoutConnection = 20000;
+	
 	public RestClient(String url) {
 		this.url = url;
 		params = new ArrayList<NameValuePair>();
@@ -159,13 +163,14 @@ public class RestClient {
 
 		while (!cancelled) {
 
-			HttpClient client = new DefaultHttpClient();
-
-			HttpResponse httpResponse;
 			
+			HttpParams httpParameters = new BasicHttpParams();
+			HttpConnectionParams.setConnectionTimeout(httpParameters, getTimeoutConnection());
+			HttpResponse httpResponse;
+			HttpClient client = new DefaultHttpClient(httpParameters);
 			if (!mCheckSsl) {
 				MyLogger.i("Disable SSL");
-				client = DisableSSLCheck.getNewHttpClient();
+				client = DisableSSLCheck.getNewHttpClient(httpParameters);
 			}
 			
 			try {
@@ -203,5 +208,13 @@ public class RestClient {
 
 	public void disableSslCheck(Boolean check) {
 		mCheckSsl = check;
+	}
+
+	public int getTimeoutConnection() {
+		return mTimeoutConnection;
+	}
+
+	public void setTimeoutConnection(int mTimeoutConnection) {
+		this.mTimeoutConnection = mTimeoutConnection;
 	}
 }
