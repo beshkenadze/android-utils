@@ -12,7 +12,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.PorterDuff.Mode;
 
 public class MyImageUtils {
-
+	
 	public static Bitmap doCrop(Bitmap bitmapOrigin, int outputX, int outputY) {
 
 		int width = bitmapOrigin.getWidth();

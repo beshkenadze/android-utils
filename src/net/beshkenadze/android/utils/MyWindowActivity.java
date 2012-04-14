@@ -9,8 +9,7 @@ public class MyWindowActivity implements OnClickListener {
 	private Context mContext;
 	private Class<?> mClass;
 
-	public MyWindowActivity(Context applicationContext,
-			Class<?> aClass) {
+	public MyWindowActivity(Context applicationContext, Class<?> aClass) {
 		mContext = applicationContext;
 		mClass = aClass;
 	}
@@ -20,11 +19,14 @@ public class MyWindowActivity implements OnClickListener {
 	}
 
 	public static void openWindow(Context c, Intent i) {
+		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		c.startActivity(i);
 	}
 
 	public static void openWindow(Context c, Class<?> aClass) {
-		c.startActivity(new Intent(c,aClass));
+		Intent i = new Intent(c, aClass);
+		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		c.startActivity(i);
 	}
 
 	@Override
