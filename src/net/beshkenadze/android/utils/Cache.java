@@ -44,4 +44,8 @@ public class Cache {
 		}
 		return dir;
 	}
+	public static long getCacheSize(Context c) {
+		File dir = Cache.getDir(c);
+		return Filesystem.getSizeRecursive(dir);
+	}
 }

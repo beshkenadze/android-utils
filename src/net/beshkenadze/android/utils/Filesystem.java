@@ -1,6 +1,8 @@
 package net.beshkenadze.android.utils;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -50,5 +52,27 @@ public class Filesystem {
 			return "/";
 		else
 			return upDir;
+	}
+	public static String getFileNameFromPath(String path) {
+		if (path == null) {
+			return null;
+		}
+		ArrayList<String> urlArray = new ArrayList<String>(Arrays.asList(path
+				.split("/")));
+		String encodedName = urlArray.get(urlArray.size() - 1).trim();
+		try {
+			return URLDecoder.decode(encodedName, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+		}
+		return encodedName;
+	}
+	public static long getSizeRecursive(File dir) {
+	    long result = 0;
+	    if (dir.isDirectory())
+	        for (File child : dir.listFiles())
+	        	getSizeRecursive(child);
+
+	    result += dir.length();
+	    return result; // return the file size
 	}
 }
