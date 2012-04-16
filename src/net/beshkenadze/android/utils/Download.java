@@ -60,8 +60,7 @@ public class Download{
 		try {
 			return downloadFile(new URL(url));
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//e.printStackTrace();
 		}
 		return null;
 	}
