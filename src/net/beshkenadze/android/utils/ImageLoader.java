@@ -155,7 +155,7 @@ public class ImageLoader {
 
 	private Bitmap getBitmap(String url) {
 		File f = fileCache.get(url);
-		if(!f.isFile()) {
+		if(f == null || !f.isFile()) {
 			return null;
 		}
 		// from SD cache
