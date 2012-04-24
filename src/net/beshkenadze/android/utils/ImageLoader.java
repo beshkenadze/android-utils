@@ -35,11 +35,11 @@ public class ImageLoader {
 	private VMRuntimeHack mRuntime;
 	private Context mContext;
 
-	public ImageLoader(Context с, VMRuntimeHack runtime) {
+	public ImageLoader(Context c, VMRuntimeHack runtime) {
 		// Make the background thead low priority. This way it will not affect
 		// the UI performance
 		photoLoaderThread.setPriority(Thread.NORM_PRIORITY - 1);
-		fileCache = new Download(с);
+		fileCache = new Download(c);
 		mRuntime = runtime;
 	}
 
