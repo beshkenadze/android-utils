@@ -38,7 +38,7 @@ public class Filesystem {
 
 	    fileOrDirectory.delete();
 	}
-
+	
 	public static String getUpPath(String path) {
 		if(path == null) return "/";
 		ArrayList<String> pathArray = new ArrayList<String>(

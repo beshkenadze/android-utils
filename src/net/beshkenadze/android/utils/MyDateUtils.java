@@ -1,5 +1,6 @@
 package net.beshkenadze.android.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 public class MyDateUtils {
@@ -24,5 +25,12 @@ public class MyDateUtils {
 		long diff = today.getTimeInMillis();
 		long days = diff / (24 * 60 * 60 * 1000);
 		return days;
+	}
+
+	public static String formatTimestamp(String format, long time) {
+		final Calendar cal = Calendar.getInstance();
+		cal.setTimeInMillis(time);
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		return sdf.format(cal.getTime());
 	}
 }

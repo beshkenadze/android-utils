@@ -45,6 +45,7 @@ public class Asset {
 			try {
 				while ((line = r.readLine()) != null) {
 					total.append(line);
+					total.append("\n");
 				}
 			} catch (IOException e) {
 				Debug.e("Error:" + e);

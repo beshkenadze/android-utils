@@ -43,4 +43,16 @@ public class MyLogger {
 		log.error(getCallableInfo(new Throwable()) + message);
 	}
 
+	public static void debug(String message) {
+		log.debug(getCallableInfo(new Throwable()) + message);
+	}
+
+	public static void info(String message) {
+		log.info(getCallableInfo(new Throwable()) + message);
+	}
+
+	public static void error(String message) {
+		log.error(getCallableInfo(new Throwable()) + message);
+	}
+
 }

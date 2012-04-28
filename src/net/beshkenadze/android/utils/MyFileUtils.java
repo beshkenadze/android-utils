@@ -3,6 +3,8 @@ package net.beshkenadze.android.utils;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.text.DecimalFormat;
@@ -39,6 +41,14 @@ public class MyFileUtils {
 		}
 
 		return type;
+	}
+
+	public static void copyFile(InputStream in, OutputStream out) throws IOException {
+		byte[] buffer = new byte[1024];
+		int read;
+		while ((read = in.read(buffer)) != -1) {
+			out.write(buffer, 0, read);
+		}
 	}
 
 	public static String getFileNameFromUrl(String path) {

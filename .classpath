@@ -8,5 +8,8 @@
 	<classpathentry kind="lib" path="libs/log4j-1.2.14.jar"/>
 	<classpathentry kind="lib" path="libs/android-support-v4.jar"/>
 	<classpathentry kind="lib" path="libs/commons-io-2.2.jar"/>
+	<classpathentry kind="lib" path="libs/ormlite-android-4.40.jar"/>
+	<classpathentry kind="lib" path="libs/ormlite-core-4.40.jar"/>
+	<classpathentry kind="lib" path="libs/ormlite-jdbc-4.40.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
