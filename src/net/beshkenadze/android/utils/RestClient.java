@@ -157,7 +157,13 @@ public class RestClient {
 	private String getRequestString() {
 		return executeRequest();
 	}
-
+	public String exportRequestString() {
+		String paramsString = "?";
+		for (NameValuePair nameValuePair : getParams()) {
+			paramsString += nameValuePair.getName()+"="+nameValuePair.getValue()+"&";
+		}
+		return url + paramsString;
+	}
 	public String executeRequest() {
 		cancelled = false;
 
@@ -216,5 +222,12 @@ public class RestClient {
 
 	public void setTimeoutConnection(int mTimeoutConnection) {
 		this.mTimeoutConnection = mTimeoutConnection;
+	}
+	public ArrayList<NameValuePair> getParams() {
+		return params;
+	}
+
+	public void setParams(ArrayList<NameValuePair> params) {
+		this.params = params;
 	}
 }

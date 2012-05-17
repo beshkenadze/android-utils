@@ -2,6 +2,7 @@ package net.beshkenadze.android.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class MyDateUtils {
 	public static Long getToday() {
@@ -28,9 +29,17 @@ public class MyDateUtils {
 	}
 
 	public static String formatTimestamp(String format, long time) {
-		final Calendar cal = Calendar.getInstance();
+		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(time);
+		return formatTimestamp(format, cal);
+	}
+
+	public static String formatTimestamp(String format, Date date) {
 		SimpleDateFormat sdf = new SimpleDateFormat(format);
-		return sdf.format(cal.getTime());
+		return sdf.format(date);
+	}
+
+	public static String formatTimestamp(String format, Calendar cal) {
+		return formatTimestamp(format, cal.getTime());
 	}
 }
