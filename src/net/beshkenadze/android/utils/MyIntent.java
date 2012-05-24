@@ -18,4 +18,11 @@ public class MyIntent {
 		intent.setDataAndType(data, type);
 		return Intent.createChooser(intent, title);
 	}
+
+	public static Intent getChooserUrlIntent(Context c, String url,
+			String type, String title) {
+		final Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setDataAndType(Uri.parse(url), type);
+		return Intent.createChooser(intent, title);
+	}
 }

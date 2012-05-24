@@ -1,7 +1,12 @@
 package net.beshkenadze.android.utils;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -12,7 +17,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.PorterDuff.Mode;
 
 public class MyImageUtils {
-	
+
 	public static Bitmap doCrop(Bitmap bitmapOrigin, int outputX, int outputY) {
 
 		int width = bitmapOrigin.getWidth();
@@ -72,6 +77,31 @@ public class MyImageUtils {
 		canvas.drawBitmap(source, null, targetRect, null);
 
 		return dest;
+	}
+
+	public static Bitmap resizeImageFile(File f, int size) {
+		try {
+			// Decode image size
+			BitmapFactory.Options o = new BitmapFactory.Options();
+			o.inJustDecodeBounds = true;
+			BitmapFactory.decodeStream(new FileInputStream(f), null, o);
+
+			// The new size we want to scale to
+			final int REQUIRED_SIZE = size;
+
+			// Find the correct scale value. It should be the power of 2.
+			int scale = 1;
+			while (o.outWidth / scale / 2 >= REQUIRED_SIZE
+					&& o.outHeight / scale / 2 >= REQUIRED_SIZE)
+				scale *= 2;
+
+			// Decode with inSampleSize
+			BitmapFactory.Options o2 = new BitmapFactory.Options();
+			o2.inSampleSize = scale;
+			return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
+		} catch (FileNotFoundException e) {
+		}
+		return null;
 	}
 
 	public static Bitmap doRoundedCornerBitmap(Bitmap bitmap, float roundPx) {

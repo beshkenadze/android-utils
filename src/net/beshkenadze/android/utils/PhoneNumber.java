@@ -66,6 +66,6 @@ public class PhoneNumber {
 	}
 
 	public boolean isValid() {
-		return (getPrefix() != null && getNumber() != null);
+		return (getPrefix() != null && getNumber() != null && getShortNumber().length() == 10);
 	}
 }

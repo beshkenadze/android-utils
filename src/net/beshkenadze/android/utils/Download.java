@@ -10,7 +10,6 @@ import java.net.URL;
 
 import net.beshkenadze.android.utils.logger.MyLogger;
 
-
 import android.content.Context;
 
 public class Download{
@@ -22,13 +21,16 @@ public class Download{
 
 	private File downloadFile(URL url) {
 		String ext = Utils.fileExtention(url.toString()).toLowerCase();
-		Boolean access = false;
-		for (String type : mimetypes) {
-            if (ext.contains(type)) {
-            	access = true;
-            }
-        }
-		if(!access) return null;
+		if(ext != null && ext.length() != 3) {
+			ext = "jpg";
+		}
+//		Boolean access = true;
+//		for (String type : mimetypes) {
+//            if (ext.contains(type)) {
+//            	access = true;
+//            }
+//        }
+//		if(!access) return null;
 		File cacheFile = Cache.getFile(context, url.toString(), ext);
 		if (cacheFile.length() <= 0) {
 			try {

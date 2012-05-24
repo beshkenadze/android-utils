@@ -39,6 +39,7 @@ public class RestClient {
 	private Boolean encode = true;
 	private HttpUriRequest request;
 	private int mTimeoutConnection = 20000;
+	private HttpResponse httpResponse;
 	
 	public RestClient(String url) {
 		this.url = url;
@@ -172,10 +173,8 @@ public class RestClient {
 			
 			HttpParams httpParameters = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(httpParameters, getTimeoutConnection());
-			HttpResponse httpResponse;
 			HttpClient client = new DefaultHttpClient(httpParameters);
 			if (!mCheckSsl) {
-				MyLogger.i("Disable SSL");
 				client = DisableSSLCheck.getNewHttpClient(httpParameters);
 			}
 			
@@ -229,5 +228,13 @@ public class RestClient {
 
 	public void setParams(ArrayList<NameValuePair> params) {
 		this.params = params;
+	}
+
+	public HttpResponse getHttpResponse() {
+		return httpResponse;
+	}
+
+	public void setHttpResponse(HttpResponse httpResponse) {
+		this.httpResponse = httpResponse;
 	}
 }
