@@ -80,28 +80,68 @@ public class MyImageUtils {
 	}
 
 	public static Bitmap resizeImageFile(File f, int size) {
+		Bitmap bitmap = null;
 		try {
-			// Decode image size
+			// decode image size
 			BitmapFactory.Options o = new BitmapFactory.Options();
 			o.inJustDecodeBounds = true;
-			BitmapFactory.decodeStream(new FileInputStream(f), null, o);
-
-			// The new size we want to scale to
-			final int REQUIRED_SIZE = size;
+			FileInputStream fis = new FileInputStream(f);
+			BitmapFactory.decodeStream(fis, null, o);
 
 			// Find the correct scale value. It should be the power of 2.
+			final int REQUIRED_SIZE = size;
+			int width_tmp = o.outWidth, height_tmp = o.outHeight;
 			int scale = 1;
-			while (o.outWidth / scale / 2 >= REQUIRED_SIZE
-					&& o.outHeight / scale / 2 >= REQUIRED_SIZE)
+			while (true) {
+				if (width_tmp / 2 < REQUIRED_SIZE
+						|| height_tmp / 2 < REQUIRED_SIZE)
+					break;
+				width_tmp /= 2;
+				height_tmp /= 2;
 				scale *= 2;
+			}
+
+			fis.close();
+			fis = new FileInputStream(f);
 
 			// Decode with inSampleSize
 			BitmapFactory.Options o2 = new BitmapFactory.Options();
 			o2.inSampleSize = scale;
-			return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-		} catch (FileNotFoundException e) {
+			bitmap = BitmapFactory.decodeStream(fis, null, o2);
+			fis.close();
+
+		} catch (OutOfMemoryError e) {
+			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		return null;
+		return bitmap;
+	}
+	public static Bitmap cropToFit(File source, int mOutputX, int mOutputY) {
+		return cropToFit(BitmapFactory.decodeFile(source.getPath()), mOutputX, mOutputY);
+	}
+	public static Bitmap cropToFit(Bitmap source, int mOutputX, int mOutputY) {
+		
+		Bitmap croppedImage = Bitmap.createBitmap(mOutputX, mOutputY,
+				Bitmap.Config.RGB_565);
+		Canvas canvas = new Canvas(croppedImage);
+
+		Rect srcRect = new Rect(0, 0, source.getWidth(), source.getHeight());
+		Rect dstRect = new Rect(0, 0, mOutputX, mOutputY);
+
+		int dx = (srcRect.width() - dstRect.width()) / 2;
+		int dy = (srcRect.height() - dstRect.height()) / 2;
+
+		// If the srcRect is too big, use the center part of it.
+		srcRect.inset(Math.max(0, dx), Math.max(0, dy));
+
+		// If the dstRect is too big, use the center part of it.
+		dstRect.inset(Math.max(0, -dx), Math.max(0, -dy));
+
+		// Draw the cropped bitmap in the center
+		canvas.drawBitmap(source, srcRect, dstRect, null);
+		return croppedImage;
 	}
 
 	public static Bitmap doRoundedCornerBitmap(Bitmap bitmap, float roundPx) {
