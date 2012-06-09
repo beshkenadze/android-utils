@@ -10,7 +10,7 @@ import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.table.TableUtils;
 
 public class DatabaseModel {
-	private Dao<Object, Integer> mDao = null;
+	private Dao mDao = null;
 	private DatabaseHelper mHelper;
 	private Class<?> mClass;
 	protected Dao<Object, Integer> getDao() {
@@ -22,8 +22,8 @@ public class DatabaseModel {
 		mClass = c;
 
 		try {
-			mDao = mHelper.getDao(mClass);
-		} catch (SQLException e) {
+            mDao = mHelper.getDao(mClass);
+        } catch (SQLException e) {
 			Debug.e("Can't get dao", e.getStackTrace());
 			throw new RuntimeException(e);
 		}

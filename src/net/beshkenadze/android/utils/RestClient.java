@@ -1,8 +1,6 @@
 package net.beshkenadze.android.utils;
 
 import net.beshkenadze.android.hacks.DisableSSLCheck;
-import net.beshkenadze.android.utils.logger.MyLogger;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;

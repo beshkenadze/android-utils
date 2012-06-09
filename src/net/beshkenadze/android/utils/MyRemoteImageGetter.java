@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 
-import net.beshkenadze.android.utils.logger.MyLogger;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -175,7 +174,6 @@ public class MyRemoteImageGetter implements ImageGetter {
 
 		private InputStream fetch(String urlString)
 				throws MalformedURLException, IOException {
-			MyLogger.i("getting:" + urlString);
 			DefaultHttpClient httpClient = new DefaultHttpClient();
 			HttpGet request = new HttpGet(urlString);
 			HttpResponse response = httpClient.execute(request);

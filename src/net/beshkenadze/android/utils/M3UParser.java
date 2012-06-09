@@ -6,8 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
-import net.beshkenadze.android.utils.logger.MyLogger;
-
 public class M3UParser {
 	private ArrayList<M3UParser.Item> items = new ArrayList<M3UParser.Item>();
 	String prefixName = "#EXTINF";

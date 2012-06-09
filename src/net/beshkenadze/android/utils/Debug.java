@@ -5,8 +5,8 @@ import java.util.Date;
 import android.util.Log;
 
 public class Debug {
-	private static final String TAG = "LOGGER";
-	private static final boolean DEBUG = true;
+    public static String TAG = "LOGGER";
+	public static boolean DEBUG = true;
 
 	public static void i(String string) {
 		if (DEBUG) {

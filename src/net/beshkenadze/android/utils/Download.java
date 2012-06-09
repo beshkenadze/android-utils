@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import net.beshkenadze.android.utils.logger.MyLogger;
-
 import android.content.Context;
 
 public class Download{

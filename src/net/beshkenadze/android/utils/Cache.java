@@ -2,7 +2,6 @@ package net.beshkenadze.android.utils;
 
 import java.io.File;
 
-import net.beshkenadze.android.utils.logger.MyLogger;
 
 import android.content.Context;
 
@@ -16,8 +15,6 @@ public class Cache {
 
 	public static File getFile(Context c, String url, String ext) {
 		String filename = Utils.md5(url);
-		MyLogger.i("ext:"+ext);
-		MyLogger.i("filename:"+filename);
 		if (filename.length() <= 0)
 			return null;
 		File tmpDirExt = new File(Cache.getDir(c) + "/" + ext);
