@@ -38,7 +38,11 @@ public class Cache {
 				dir.mkdirs();
 			}
 			if (dir.canWrite() == false) {
-				dir.setWritable(true);
+				try{
+                    dir.setWritable(true);
+                }catch (Exception e) {
+
+                }
 			}
 		} else {
 			dir = c.getCacheDir();

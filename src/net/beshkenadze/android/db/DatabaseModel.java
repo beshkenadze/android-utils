@@ -3,11 +3,9 @@ package net.beshkenadze.android.db;
 import java.sql.SQLException;
 import java.util.List;
 
-import net.beshkenadze.android.utils.Debug;
-
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
 import com.j256.ormlite.table.TableUtils;
+import net.beshkenadze.android.utils.Debug;
 
 public class DatabaseModel {
 	private Dao mDao = null;
