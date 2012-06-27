@@ -70,4 +70,7 @@ public class MyPreference {
 		}
 		return null;
 	}
+    public SharedPreferences getBasePreference(){
+        return prefs;
+    }
 }

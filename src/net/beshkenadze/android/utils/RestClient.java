@@ -92,8 +92,8 @@ public class RestClient {
 		return combinedParams;
 	}
 
-	public void postRequest() {
-		postRequest(null);
+	public String postRequest() {
+		return postRequest(null);
 	}
 
 	public void doPreparePostRequest(String raw) {
